@@ -1,0 +1,22 @@
+* Project introduction
+A little bit about this project, and what you might find inside the LaTeX document.
+
+* Installation
+** LaTeX for Ubuntu (just in case you don't already have it!)
+For a quick minimal install - this installs the 2023 version (on apt).
+#+begin_src bash
+sudo apt install texlive-latex-base texlive-latex-recommended texlive-latex-extra biber
+#+end_src
+
+For a full and modern install, go to [[https://au.mirrors.cicku.me/ctan/systems/texlive/][the CTAN mirror]], and find the download for =install-tl-unx.tar.gz=.
+=ctan/systems/texlive/tlnet= is the recent stable version, but may not be up to date and may not install.
+=ctan/systems/texlive/Source= is the bleeding edge development version, and may still break, but will be the most recent.
+
+#+begin_src bash
+# Extract the tar file
+tar -xzf install-tl-unx.tar.gz
+cd install-tl-*/
+# Run the installer
+sudo perl install-tl
+# Here, you can define how you're installing it. You should save a copy of the texlive.profile, and move it somewhere sensible e.g. ~/texlive.profile
+#+end_src

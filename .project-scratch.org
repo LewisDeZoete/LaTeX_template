@@ -1,0 +1,154 @@
+#+title: LaTeX Project
+
+* Document outline
+* Keybinds
+** Navigation
+*** ] ] - org-next-visible-heading
+Next heading
+*** [ [ - org-previous-visible-heading
+Previous heading
+*** ] h - org-forward-heading-same-level
+Next heading same level
+*** [ h - org-backward-heading-same-level
+Previous heading same level
+*** g h - org-up-element
+Move to upper (heading) element
+*** z u - outline-up-heading
+Backward to higher level heading
+*** C-c C-j - org-goto
+Jump to different place without changing the current outline visibility
+** Visualising
+*** z c - +org/close-fold
+Folds current heading
+*** z M - +org/close-all-folds
+Folds all visual headings
+** Correcting
+*** ] s - +spell/next-error
+Next ispell error
+*** [ s - +spell/previous-error
+Previous ispell error
+** Table-of-contents
+*** SPC m ; - reftex-toc
+Open reftex table of contents for the entire document
+*** TAB - reftex-toc-goto-line
+Go to document location in other window, TOC window stays
+*** f - reftex-toc-toggle-follow
+Toggle follow (other LaTeX doc window follows with context)
+*** r l - reftex-toc-rename-label
+Rename the currently selected label in *toc* buffer
+*** g O - reftex-toc-view-line
+View document location in other window
+*** J - reftex-toc-jump
+Jump to specified section (e.g. '3 J' jumps to section 3)
+*** < / > - reftex-toc-demote/promote
+Demote or promote section or sections within selected region at point
+* Searcher
+Change ~search_string~ value to search for a particular string.
+        e.g. ~search_string="flowpose"~
+Change ~excluded_dirs~ to exclude particular directories from grep search.
+        e.g. ~excluded_dirs=(":!./logs/*" ":!./org/*")~
+#+begin_src bash :results output
+## ----------------------
+search_string="goblin army"
+excluded_dirs=(
+    ":!./build/*"
+    ":!./out/*"
+    ":!./*.aux"
+    ":!./*.log"
+    ":!./*.toc"
+    ":!./*.bbl"
+    ":!./*.blg"
+    ":!./*.fls"
+    ":!./*.fdb_latexmk"
+    ":!./*.synctex.gz"
+    ":!./*.pdf"
+    ":!./*.png"
+    ":!./*.drawio"
+    ":!./*.eps"
+    ":!./.project-scratch.org"
+)
+## ----------------------
+
+# Search for the file names
+git grep -l $search_string -- ${excluded_dirs[@]}
+# Provide a file count
+echo -e "\nThere are $(git grep -l $search_string -- ${excluded_dirs[@]} | wc -l) files containing '${search_string}'"
+#+end_src
+
+#+RESULTS:
+:
+: There are 0 files containing 'goblin army'
+
+* Test bed
+#+begin_src python :results output
+print("Hello world!")
+#+end_src
+
+#+RESULTS:
+: Hello world!
+* Setup
+Run the following codeblock to create a symlink to refs.bib when setting up this repo on a new machine.
+**Replace the path below with your local =.bib= file location**
+#+begin_src sh
+## --------------------------
+BIB_PATH="/THE/PATH/TO/refs.bib"
+## --------------------------
+ln -sf "$BIB_PATH" "$(dirname $0)/refs.bib"
+echo "Symlink created → refs.bib"
+#+end_src
+
+#+RESULTS:
+: Symlink created → refs.bib
+
+* TODOs
+** Manual
+*** General
+- [ ] Ensure you run [[*Setup][Setup]] to copy the refs.bib!
+*** Section 2
+- [ ] Complete section 2
+- [ ] First item on the list!
+** Scanner
+Run scanner by moving cursor inside codeblock, then executing code =C-c C-c=
+#+NAME: scan-todos
+#+BEGIN_SRC emacs-lisp :results none
+(require 'cl-lib)
+(let* ((root (file-name-directory (buffer-file-name)))
+       (extensions '(".py" ".js" ".ts" ".jsx" ".tsx"
+                     ".rb" ".go" ".rs" ".java" ".c" ".cpp" ".h"
+                     ".sh" ".bash" ".zsh" ".css" ".scss" ".html"
+                     ".el" ".clj" ".ex" ".exs" ".md" ".org" ".tex"))
+       (exclude-dirs '(".git" "node_modules" ".venv" "venv" "__pycache__"
+                       "dist" "build" ".next" "target" "vendor"))
+       (output ""))
+  (dolist (file (directory-files-recursively root "."))
+    (let ((rel (file-relative-name file root)))
+      (when (and (cl-some (lambda (e) (string-suffix-p e file)) extensions)
+                 (not (cl-some (lambda (d) (string-match-p (regexp-quote (concat "/" d "/")) (concat "/" rel))) exclude-dirs)))
+        (with-temp-buffer
+          (insert-file-contents file)
+          (goto-char (point-min))
+          (let (found)
+            (while (re-search-forward "TODO:[[:space:]]*\\(.*\\)" nil t)
+              (unless found
+                (setq output (concat output (format "*** ~%s~\n" rel)))
+                (setq found t))
+              (setq output (concat output
+                                   (format "    - Line %d: %s [[file:%s::%d][→]]\n"
+                                           (line-number-at-pos)
+                                           (string-trim (match-string 1))
+                                           rel
+                                           (line-number-at-pos))))))))))
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward "^\\*\\* Items$" nil t)
+      (forward-line 1)
+      (let ((start (point))
+            (end (save-excursion
+                   (if (re-search-forward "^\\*\\* " nil t)
+                       (line-beginning-position)
+                     (point-max)))))
+        (delete-region start end)
+        (insert "\n" (if (string-empty-p output) "   /No TODOs found./\n" output) "\n")))))
+#+END_SRC
+
+

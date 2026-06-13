@@ -1,4 +1,6 @@
 #+title: LaTeX Project
+#+DESCRIPTION: Template for creating a LaTeX document
+#+STARTUP: fold
 
 * Document outline
 * Keybinds

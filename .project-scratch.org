@@ -82,6 +82,27 @@ echo -e "\nThere are $(git grep -l $search_string -- ${excluded_dirs[@]} | wc -l
 : There are 0 files containing 'goblin army'
 
 * Test bed
+** LaTeX testing
+You can quickly test what blocks of LaTeX code looks like by exporting them as images. This can be as simple or as complex as you'd like.
+You can use #+LATEX_HEADER: <arg> to define things before the latex block runs, like \usepackage{etoolbox} and others.
+You can export them as images using :exports results :file <filename.png>.
+More examples can be found [[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-LaTeX.html][here]].
+
+#+LATEX_HEADER: \usepackage{etoolbox}
+#+LATEX_HEADER: \csdef{RQ1}{What is the effect of X on Y?}
+#+LATEX_HEADER: \csdef{RQ1.1}{How does X specifically influence sub-factor Z?}
+#+LATEX_HEADER: \newcommand{\RQ}[1]{\csuse{#1}}
+#+BEGIN_SRC latex :exports results :file test.png 
+The first research question is:
+\RQ{RQ1}
+And sub-questions:
+\begin{itemize}
+    \item[] \RQ{RQ1.1}
+    \item[] \RQ{RQ1.2}
+\end{itemize}
+#+END_SRC
+
+** Python testing
 #+begin_src python :results output
 print("Hello world!")
 #+end_src

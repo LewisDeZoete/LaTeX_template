@@ -1,0 +1,122 @@
+* Using this template
+I'm assuming you have a LaTeX compiler on your machine. If you need more information about installing LaTeX
+
+Start using this template:
+#+begin_src bash
+# Clone the python template repo
+git clone --depth 1 git@public.github.com:LewisDeZoete/LaTeX_template.git <PROJECT_NAME>
+cd <PROJECT_NAME> && rm -rf .git && git init
+#+end_src
+
+If you're working from a template that is provided by an external organisation, copy all of their .tex files into the root of this repo.
+
+*NOW REMOVE THIS HEADING AND EDIT THE README!*
+
+* Project introduction
+A little bit about this project.
+_NOTE_: Don't forget to change any instance of *<THIS_REPO>* inside this README!
+
+* LaTeX for Ubuntu
+** Quick setup
+# TODO: align with full texlive setup + profile
+For a quick minimal install - this installs the 2023 version (on apt).
+#+begin_src bash
+sudo apt install texlive-latex-base texlive-latex-recommended texlive-latex-extra biber
+#+end_src
+
+** Full setup
+*** Directory setup
+First, create the required directories:
+#+begin_src sh
+mkdir -p "$HOME/Apps/texlive"/{texmf,texmf-config,texmf-var}
+#+end_src
+
+*** the texlive.profile
+Next, create a file at =~/Apps/texlive/texlive.profile= as follows:
+#+begin_src sh
+# texlive.profile written on Fri Jul 17 07:13:52 2026 UTC
+# It will NOT be updated and reflects only the
+# installation profile at installation time.
+selected_scheme scheme-full
+TEXDIR /usr/local/texlive/2026
+TEXMFCONFIG ~/Apps/texlive/texmf-config
+TEXMFHOME ~/Apps/texlive/texmf
+TEXMFLOCAL /usr/local/texlive/texmf-local
+TEXMFSYSCONFIG /usr/local/texlive/2026/texmf-config
+TEXMFSYSVAR /usr/local/texlive/2026/texmf-var
+TEXMFVAR ~/Apps/texlive/texmf-var
+binary_x86_64-linux 1
+instopt_adjustpath 0
+instopt_adjustrepo 1
+instopt_letter 0
+instopt_portable 0
+instopt_write18_restricted 1
+tlpdbopt_autobackup 1
+tlpdbopt_backupdir tlpkg/backups
+tlpdbopt_create_formats 1
+tlpdbopt_desktop_integration 1
+tlpdbopt_file_assocs 1
+tlpdbopt_generate_updmap 0
+tlpdbopt_install_docfiles 1
+tlpdbopt_install_srcfiles 1
+tlpdbopt_post_code 1
+tlpdbopt_sys_bin /usr/local/bin
+tlpdbopt_sys_info /usr/local/share/info
+tlpdbopt_sys_man /usr/local/share/man
+tlpdbopt_w32_multi_user 1
+#+end_src
+
+*** CTAN Installer
+For a full and modern install, go to [[https://au.mirrors.cicku.me/ctan/systems/texlive/][the CTAN mirror]], and find the download for =install-tl-unx.tar.gz=.
+=ctan/systems/texlive/tlnet= is the recent stable version, but may not be up to date and may not install.
+=ctan/systems/texlive/Source= is the bleeding edge development version, and may still break, but will be the most recent.
+
+Download whichever one you want, and place it somewhere like
+=~/Apps/texlive/install-tl-unx.tar.gz=
+
+#+begin_src sh
+cd ~/Apps/texlive/install-tl-unx.tar.gz
+
+# Extract the tar file
+tar -xzf install-tl-unx.tar.gz
+cd install-tl-*/
+#+end_src
+
+Run the installer:
+#+begin_src sh
+sudo ./install-tl --profile=~/Apps/texlive/texlive.profile
+#+end_src
+
+It takes about 20 minutes, but once it's done, it'll give you a nice little message:
+#+begin_example
+Welcome to TeX Live!
+See /usr/local/texlive/2026/index.html for links to documentation.
+The TeX Live web site (https://tug.org/texlive/) provides all updates and corrections. TeX Live is a joint project of the TeX user groups around the world; please consider supporting it by joining the group best for you. The list of groups is available on the web at https://tug.org/usergroups.html.
+Add /usr/local/texlive/2026/texmf-dist/doc/man to MANPATH.
+Add /usr/local/texlive/2026/texmf-dist/doc/info to INFOPATH.
+Most importantly, add /usr/local/texlive/2026/bin/x86_64-linux to your PATH
+for current and future sessions.
+Logfile: /usr/local/texlive/2026/install-tl.log
+#+end_example
+
+*** Add texlive to path
+As per the log file, make sure you add something like this to your =.bashrc=
+
+#+begin_src sh
+...
+export PATH="/usr/local/texlive/2026/bin/x86_64-linux:$PATH"
+#+end_src
+
+*** Verify install
+#+begin_src sh
+pdflatex --version
+kpsewhich -var-value=TEXMFHOME # ~/Apps/texlive/texmf
+kpsewhich -var-value=TEXMFCONFIG # ~/Apps/texlive/texmf-config
+kpsewhich -var-value=TEXMFVAR # ~/Apps/texlive/texmf-var
+#+end_src
+
+At least once, it's worth also running:
+#+begin_src sh
+fmtutil-user --all
+updmap-user
+#+end_src
